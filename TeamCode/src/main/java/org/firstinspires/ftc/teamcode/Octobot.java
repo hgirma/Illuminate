@@ -63,11 +63,14 @@ public class Octobot extends LinearOpMode {
 
             telemetry.addData("left_trigger: ", gamepad1.left_trigger);
             telemetry.addData("right_trigger: ", gamepad1.right_trigger);
-            telemetry.update();
 
             processOctobotCommands();
 
             processFtcDrivetrainCommands();
+
+            telemetry.addData("arm position: ", arm.getCurrentPosition());
+            telemetry.addData("wormGear position: ", wormGear.getCurrentPosition());
+            telemetry.update();
         }
     }
 
