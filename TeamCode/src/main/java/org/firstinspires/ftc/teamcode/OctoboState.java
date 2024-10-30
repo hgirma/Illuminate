@@ -6,15 +6,16 @@ public class OctoboState {
     private double wormGearPosition = 0;
 
     private boolean armLocked = false;
+
     public OctoboState()
     {
     }
 
-    public  void SetArmPosition(double armPosition){
+    public void setArmPosition(double armPosition) {
         this.armPosition = armPosition;
     }
 
-    public double GetArmPosition(){
+    public double getArmPosition() {
         return this.armPosition;
     }
 

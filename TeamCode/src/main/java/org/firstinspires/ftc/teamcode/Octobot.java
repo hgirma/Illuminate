@@ -22,8 +22,10 @@ public class Octobot extends LinearOpMode {
     private DcMotor wormGear = null;
 
     // speed settings for motors
-    final double WORM_GEAR_SPEED = 1;
     final double ARM_SPEED = 1;
+
+    // to capture various states of the motors
+    OctoboState octoboState = new OctoboState();
 
     @Override
     public void runOpMode() {
@@ -68,8 +70,9 @@ public class Octobot extends LinearOpMode {
 
             processFtcDrivetrainCommands();
 
-            telemetry.addData("arm position: ", arm.getCurrentPosition());
-            telemetry.addData("wormGear position: ", wormGear.getCurrentPosition());
+            telemetry.addData("arm position: ", octoboState.getWormGearPosition());
+            telemetry.addData("arm locked: ", octoboState.getArmLocked());
+            telemetry.addData("wormGear position: ", octoboState.getArmPosition());
             telemetry.update();
         }
     }
@@ -92,8 +95,10 @@ public class Octobot extends LinearOpMode {
         // the buttons are pressed. this will allow fine control over the motor
         if (leftTrigger > 0) {
             wormGear.setPower(leftTrigger);
+            octoboState.setWormGearPosition(wormGear.getCurrentPosition());
         } else if (rightTrigger > 0) {
             wormGear.setPower(rightTrigger);
+            octoboState.setWormGearPosition(wormGear.getCurrentPosition());
         } else {
             wormGear.setPower(0);
         }
@@ -112,24 +117,24 @@ public class Octobot extends LinearOpMode {
         if (gamepad1.y) {
             arm.setDirection(DcMotor.Direction.FORWARD);
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //unlock to it moves freely
-            arm.setPower(ARM_SPEED);
         }
 
         // set direction of arm motor to reverse when Y is pressed
         if (gamepad1.a) {
             arm.setDirection(DcMotor.Direction.REVERSE);
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //unlock to it moves freely
-            arm.setPower(ARM_SPEED);
         }
 
         // if A or X button is pressed, give power to arm motor to move it
         if (gamepad1.y || gamepad1.a) {
             arm.setPower(ARM_SPEED);
+            octoboState.setArmPosition(arm.getCurrentPosition());
         } else {
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // lock in place
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setTargetPosition(0);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            octoboState.setArmLocked(true);
         }
     }
 
