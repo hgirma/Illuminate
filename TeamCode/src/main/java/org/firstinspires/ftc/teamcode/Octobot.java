@@ -70,9 +70,9 @@ public class Octobot extends LinearOpMode {
 
             processFtcDrivetrainCommands();
 
-            telemetry.addData("arm position: ", octoboState.getWormGearPosition());
+            telemetry.addData("arm position: ", octoboState.getArmPosition());
             telemetry.addData("arm locked: ", octoboState.getArmLocked());
-            telemetry.addData("wormGear position: ", octoboState.getArmPosition());
+            telemetry.addData("wormGear position: ", octoboState.getWormGearPosition());
             telemetry.update();
         }
     }
