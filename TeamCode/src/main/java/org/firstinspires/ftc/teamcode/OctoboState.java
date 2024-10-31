@@ -5,7 +5,7 @@ public class OctoboState {
 
     private double wormGearPosition = 0;
 
-    private boolean armLocked = false;
+    private boolean armLocked = true;
 
     public OctoboState()
     {
