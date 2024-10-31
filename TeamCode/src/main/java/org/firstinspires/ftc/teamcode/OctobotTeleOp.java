@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -16,7 +17,7 @@ public class OctobotTeleOp extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private Octobot bot = null;
+    private Octobot robot = null;
 
     @Override
     public void runOpMode() {
@@ -27,7 +28,7 @@ public class OctobotTeleOp extends LinearOpMode {
         DcMotor wormGear = hardwareMap.get(DcMotor.class, "wormGear");
 
         // initialize bot and pass in the motors
-        bot = new Octobot(claw, arm, wormGear);
+        robot = new Octobot(claw, arm, wormGear);
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
@@ -65,9 +66,9 @@ public class OctobotTeleOp extends LinearOpMode {
 
             processFtcDrivetrainCommands();
 
-            telemetry.addData("arm position: ", bot.getArmPosition());
-            telemetry.addData("arm locked: ", bot.getArmLocked());
-            telemetry.addData("wormGear position: ", bot.getWormGearPosition());
+            telemetry.addData("arm position: ", robot.getArmPosition());
+            telemetry.addData("arm locked: ", robot.getArmLocked());
+            telemetry.addData("wormGear position: ", robot.getWormGearPosition());
             telemetry.update();
         }
     }
@@ -80,36 +81,26 @@ public class OctobotTeleOp extends LinearOpMode {
         // set the power to the value of the trigger to control the speed depending on how far
         // the buttons are pressed. this will allow fine control over the motor
         if (leftTrigger > 0) {
-            bot.moveWormGearUp(leftTrigger);
+            robot.moveWormGear(DcMotorSimple.Direction.FORWARD, leftTrigger);
         } else if (rightTrigger > 0) {
-            bot.moveWormGearDown(rightTrigger);
+            robot.moveWormGear(DcMotorSimple.Direction.REVERSE, rightTrigger);
         } else {
-            bot.stopWormGear();
+            robot.stopWormGear();
         }
 
         // close claw of servo when left bumper is clicked
         if (gamepad1.left_bumper) {
-            bot.closeClaw();
+            robot.closeClaw();
+        } else if (gamepad1.right_bumper) {
+            robot.openClaw();
         }
 
-        // open claw of servo when left bumper is clicked
-        if (gamepad1.right_bumper) {
-            bot.openClaw();
-        }
-
-        // set direction of arm motor to forward when Y is pressed
         if (gamepad1.y) {
-            bot.extendArm();
-        }
-
-        // set direction of arm motor to reverse when Y is pressed
-        if (gamepad1.a) {
-            bot.retractArm();
-        }
-
-        // if Y and A button is NOT pressed and the arm is not locked, lock it in position
-        if (!gamepad1.y && !gamepad1.a && !bot.getArmLocked()) {
-            bot.lockArm();
+            robot.moveArm(DcMotor.Direction.FORWARD);
+        } else if (gamepad1.a) {
+            robot.moveArm(DcMotor.Direction.REVERSE);
+        } else {
+            robot.lockArm();
         }
     }
 

@@ -4,6 +4,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Octobot {
+    private enum ClawPosition {
+        CLOSED, // claw is open - 0
+        OPEN // claw is open - 1
+    }
 
     // Octobot specific variables
     private final Servo claw;
@@ -26,17 +30,8 @@ public class Octobot {
     /**
      * @param speed the amount of power to give the motor
      */
-    public void moveWormGearDown(float speed) {
-        wormGear.setDirection(DcMotor.Direction.FORWARD);
-        wormGear.setPower(speed);
-        octoboState.setWormGearPosition(wormGear.getCurrentPosition());
-    }
-
-    /**
-     * @param speed the amount of power to give the motor
-     */
-    public void moveWormGearUp(float speed) {
-        wormGear.setDirection(DcMotor.Direction.REVERSE);
+    public void moveWormGear(DcMotor.Direction direction, float speed) {
+        wormGear.setDirection(direction);
         wormGear.setPower(speed);
         octoboState.setWormGearPosition(wormGear.getCurrentPosition());
     }
@@ -46,26 +41,16 @@ public class Octobot {
     }
 
     public void openClaw() {
-        claw.setPosition(1);
+        claw.setPosition(ClawPosition.OPEN.ordinal());
     }
 
     public void closeClaw() {
-        claw.setPosition(0);
+        claw.setPosition(ClawPosition.CLOSED.ordinal());
     }
 
-    public void extendArm() {
-
-        arm.setDirection(DcMotor.Direction.FORWARD);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //unlock to it moves freely
-        arm.setPower(ARM_SPEED);
-
-        octoboState.setArmPosition(arm.getCurrentPosition());
-        octoboState.setArmLocked(false);
-    }
-
-    public void retractArm() {
-        arm.setDirection(DcMotor.Direction.REVERSE);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //unlock to it moves freely
+    public void moveArm(DcMotor.Direction direction) {
+        arm.setDirection(direction);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setPower(ARM_SPEED);
 
         octoboState.setArmPosition(arm.getCurrentPosition());
@@ -73,11 +58,17 @@ public class Octobot {
     }
 
     public void lockArm() {
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // lock in place
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // if arm is already locked, return
+        if (octoboState.getArmLocked()) {
+            return;
+        }
 
-        // arm.setTargetPosition(0);
+        int currentPosition = arm.getCurrentPosition(); // Get current position
+
+        arm.setTargetPosition(currentPosition); // Set target to current position
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         octoboState.setArmLocked(true);
     }
 
