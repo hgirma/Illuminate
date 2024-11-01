@@ -95,9 +95,9 @@ public class OctobotTeleOp extends LinearOpMode {
             robot.openClaw();
         }
 
-        if (gamepad1.y) {
+        if (gamepad1.y || gamepad1.dpad_up) {
             robot.moveArm(DcMotor.Direction.FORWARD);
-        } else if (gamepad1.a) {
+        } else if (gamepad1.a || gamepad1.dpad_down) {
             robot.moveArm(DcMotor.Direction.REVERSE);
         } else {
             robot.lockArm();

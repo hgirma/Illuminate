@@ -33,6 +33,7 @@ public class Octobot {
     public void moveWormGear(DcMotor.Direction direction, float speed) {
         wormGear.setDirection(direction);
         wormGear.setPower(speed);
+
         octoboState.setWormGearPosition(wormGear.getCurrentPosition());
     }
 
