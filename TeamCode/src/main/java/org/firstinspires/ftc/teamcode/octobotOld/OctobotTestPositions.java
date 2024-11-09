@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.octobotOld;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Octobot v1", group = "Linear OpMode")
-public class OctobotTeleOp extends LinearOpMode {
+@TeleOp(name = "Octobot - TestPositions", group = "Linear OpMode")
+public class OctobotTestPositions extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -51,56 +50,40 @@ public class OctobotTeleOp extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            // log the values read from gamepad sticks and triggers
-            telemetry.addData("left_stick_x: ", gamepad1.left_stick_x);
-            telemetry.addData("left_stick_y: ", gamepad1.left_stick_y);
-
-            telemetry.addData("right_stick_x: ", gamepad1.right_stick_x);
-            telemetry.addData("right_stick_y: ", gamepad1.right_stick_y);
-
-            telemetry.addData("left_trigger: ", gamepad1.left_trigger);
-            telemetry.addData("right_trigger: ", gamepad1.right_trigger);
-
             processOctobotCommands();
 
             processFtcDrivetrainCommands();
 
-            telemetry.addData("arm position: ", robot.getArmPosition());
+            // logs to help troubleshoot
+            telemetry.addData("r-arm position: ", robot.getArmPosition());
+            telemetry.addData("arm position: ", arm.getCurrentPosition());
+
+            telemetry.addData("r-wormGear position: ", robot.getWormGearPosition());
+            telemetry.addData("wormGear position: ", wormGear.getCurrentPosition());
+
+            telemetry.addData("claw open: ", claw.getPosition());
+
             telemetry.addData("arm locked: ", robot.getArmLocked());
-            telemetry.addData("wormGear position: ", robot.getWormGearPosition());
+            telemetry.addData("r-arm locked: ", robot.getArmLocked());
+
             telemetry.update();
         }
     }
 
+    int clawDegree = 0;
+
     private void processOctobotCommands() {
-        // read the trigger values
-        float leftTrigger = gamepad1.left_trigger;
-        float rightTrigger = gamepad1.right_trigger;
 
-        // set the power to the value of the trigger to control the speed depending on how far
-        // the buttons are pressed. this will allow fine control over the motor
-        if (leftTrigger > 0) {
-            robot.moveWormGear(DcMotorSimple.Direction.FORWARD, leftTrigger);
-        } else if (rightTrigger > 0) {
-            robot.moveWormGear(DcMotorSimple.Direction.REVERSE, rightTrigger);
-        } else {
-            robot.stopWormGear();
+        if (gamepad1.start) {
+            robot.restPositions();
         }
 
-        // close claw of servo when left bumper is clicked
-        if (gamepad1.left_bumper) {
-            robot.closeClaw();
-        } else if (gamepad1.right_bumper) {
-            robot.openClaw();
+        if (gamepad1.x) {
+            robot.moveWorkGearToPosition(-756);
         }
 
-        if (gamepad1.y || gamepad1.dpad_up) {
-            robot.moveArm(DcMotor.Direction.FORWARD);
-        } else if (gamepad1.a || gamepad1.dpad_down) {
-            robot.moveArm(DcMotor.Direction.REVERSE);
-        } else {
-            robot.lockArm();
+        if (gamepad1.a) {
+            robot.moveWorkGearToPosition(0);
         }
     }
 
